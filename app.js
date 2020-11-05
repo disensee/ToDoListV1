@@ -2,20 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-app.use(bodyParser.urlencoded({extended:true}));
-app.set('view engine', 'ejs');
 
-var items = ["Buy food", "Cook food", "Eat food"];
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static("public"));
+let items = ["Buy food", "Cook food", "Eat food"];
 
 app.get("/", (req, res) => {
-  var today = new Date();
-  var options = {
+  let today = new Date();
+  let options = {
     weekday: "long",
     day: "numeric",
     month: "long"
   };
 
-  var day = today.toLocaleDateString("en-US", options);
+  let day = today.toLocaleDateString("en-US", options);
 
   res.render('list', {
     date: day,
@@ -24,8 +25,12 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-  items.push(req.body.toDoListItem);
-  res.redirect("/");
+  var addedItem = req.body.toDoListItem;
+
+  if(addedItem){
+    items.push(req.body.toDoListItem);
+    res.redirect("/");
+  }
 });
 
 app.listen(3000, () => {
