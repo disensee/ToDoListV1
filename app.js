@@ -6,7 +6,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
+
 let items = ["Buy food", "Cook food", "Eat food"];
+let workItems = [];
 
 app.get("/", (req, res) => {
   let today = new Date();
@@ -19,19 +21,27 @@ app.get("/", (req, res) => {
   let day = today.toLocaleDateString("en-US", options);
 
   res.render('list', {
-    date: day,
+    listTitle: day,
     newListItems: items
   });
 });
 
 app.post("/", (req, res) => {
-  var addedItem = req.body.toDoListItem;
+  let addedItem = req.body.toDoListItem;
 
-  if(addedItem){
+  if(req.body.list === "Work List"){
+      workItems.push(addedItem)
+      res.redirect("/work");
+  }else{
     items.push(req.body.toDoListItem);
     res.redirect("/");
   }
 });
+
+app.get("/work", (req, res) => {
+  res.render('list',{listTitle: "Work List", newListItems: workItems})
+});
+
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
